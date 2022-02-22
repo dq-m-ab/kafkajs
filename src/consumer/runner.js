@@ -173,8 +173,8 @@ module.exports = class Runner extends EventEmitter {
       }
 
       this.consumerGroup.resolveOffset({ topic, partition, offset: message.offset })
-      await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval })
       await this.autoCommitOffsetsIfNecessary()
+      await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval })
     }
   }
 
@@ -376,6 +376,7 @@ module.exports = class Runner extends EventEmitter {
               await onBatch(batch)
             } catch (e) {
               unlockWithError(e)
+              throw e;
             } finally {
               numberOfExecutions++
               if (requestsCompleted && numberOfExecutions === expectedNumberOfExecutions) {
